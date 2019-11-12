@@ -1,7 +1,7 @@
 This branch is used to develop the **UEFI Redfish Feature**. The code base of development is based on the release of **edk2-stable201811** tag. The code was implemented follow below design and released in 2019.1. The follow up **UEFI Redfish POC code re-architecture** (refer to "EDK2 Redfish POC Code re-architecture Project" section) was proposed in 2019.8 in order to make edk2 Redfish support more flexible and easier to be integrated to OEM edk2 code base. The UEFI Redfish POC code re-architecture is working in progress.
 
 The branch owner:
-Fu Siyuan <siyuan.fu@intel.com>, Ye Ting <ting.ye@intel.com>, Wang Fan <fan.wang@intel.com>, Wu Jiaxin <jiaxin.wu@intel.com>, <abner.chang@hpe.com>, <nickle.wang@hpe.com>
+Fu Siyuan <siyuan.fu@intel.com>, Ye Ting <ting.ye@intel.com>, Wang Fan <fan.wang@intel.com>, Wu Jiaxin <jiaxin.wu@intel.com>, Chang Abner <abner.chang@hpe.com>, Wang Nickle <nickle.wang@hpe.com>
 
 ## Introduction
 UEFI Redfish is an efficient and secure solution for end users to remote control and configure UEFI pre-OS environment by leveraging the RESTful API.  It's simple for end users to access the data from UEFI firmware defined in JSON format.
