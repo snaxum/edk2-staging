@@ -1,7 +1,7 @@
-This branch is used to develop the **UEFI Redfish Feature**. The code base of development is based on the release of **edk2-stable201811** tag.
+This branch is used to develop the **UEFI Redfish Feature**. The code base of development is based on the release of **edk2-stable201811** tag. The code was implemented follow below design and released in 2019.1. The follow up **UEFI Redfish POC code re-architecture** (refer to "EDK2 Redfish POC Code re-architecture Project" section) was proposed in 2019.8 in order to make edk2 Redfish support more flexible and easier to be integrated to OEM edk2 code base. The UEFI Redfish POC code re-architecture is working in progress.
 
 The branch owner:
-Fu Siyuan <siyuan.fu@intel.com>, Ye Ting <ting.ye@intel.com>, Wang Fan <fan.wang@intel.com>, Wu Jiaxin <jiaxin.wu@intel.com>
+Fu Siyuan <siyuan.fu@intel.com>, Ye Ting <ting.ye@intel.com>, Wang Fan <fan.wang@intel.com>, Wu Jiaxin <jiaxin.wu@intel.com>, <abner.chang@hpe.com>, <nickle.wang@hpe.com>
 
 ## Introduction
 UEFI Redfish is an efficient and secure solution for end users to remote control and configure UEFI pre-OS environment by leveraging the RESTful API.  It's simple for end users to access the data from UEFI firmware defined in JSON format.
@@ -75,12 +75,6 @@ If a subset feature or a bug fix in this staging branch could meet below require
 * Support both IA32 and X64 Platform.
 * Ready for product integration.
 
-## Timeline
-| Time | Event | Related Modules |
-|:----:|:-----:|:--------------:|
-| 2019.01 | Initial open source release of UEFI Redfish feature. | Refer to "Related Modules" |
-|...|...|...|
-
 ## Related Materials
 1. DSP0270 - Redfish Host Interface Specification, 1.0.1
 
@@ -94,8 +88,43 @@ If a subset feature or a bug fix in this staging branch could meet below require
 
 # EDK2 Redfish POC Code re-architecture Project
 Intel Redfish POC Code Rearchitecture.pdf (under branch root) is uploaded as the reference. This proposal has discussed in TianoCore design meeting and the goal of re-architecture project is to make edk2 Redfish support more flexible and easier to be integrated to OEM edk2 code base.
-HPE is making code changes on this branch based on the proposal. 
+HPE is making code changes on this branch based on the proposal.
 
-## The opinions from TianoCore community against to the proposal
-- Still use protocol for Redfish credential on edk2, instead of using the library instance mentioned in the re-architecture proposal.
-- REST EX shouldn't have the dependency of platform-specific protocol. Use library instance for platform-specific implementation and OEM deals with the dependency, opensource use NULL lib instance which has no dependencies with other protocols.
+![UEFI Redfish final Solution Layout](https://github.com/tianocore/edk2-staging/blob/UEFI_Redfish/Images/FinalSolution.jpg?raw=true)
+
+## Re-architecture of EFI Redfish Driver Stacks
+Below are items of UEFI Redfish re-architecture project,
+
+### EFI Redfish Host Interface DXE driver
+The abstract DXE driver to create SMBIOS type 42 record through EFI SMBIOS protocol according to SMBIOS type 42h device descriptor and protocol type data provided by PlatformHostInterfaceLib. On edk2 open source implementation, SMBIOS type 42 data is retrieved from EFI variable which is created using RedfishPlatformConfig.efi under EFI shell. OEM may provide itsown PlatformHostInterfaceLib instance for platform-specific implementation.
+***UEFI spec ECR is required***
+
+### EFI Refish Credential DXE driver
+Generic EFI Redfish Credential DXE driver which incoporates with RedfishPlatformCredentialLib to acquire the Redfish service credential. On edk2 open source implementation, the credential is hardcoded using the fixed Account/Password. OEM may provide itsown RedfishPlatformCredentialLib instance for platform-specific implementation.
+***UEFI spec ECR is required***
+
+### EFI REST EX UEFI driver for Redfish service
+Refine EFI REST EX UEFI driver for Redfish service. 
+
+### EFI Redfish Discover UEFI driver
+EFI Redfish Discover Protocol implementation (UEFI spec 2.8, section 31.1). Only support Redfish service discovery over Redfish Host Interface.
+
+### EFI Redfish Config UEFI driver
+Refine EFI Redfish Config UEFI driver, use EFI Redfish Discover Protcol to discover Redfish service and remove the dependencies with SMBIOS Redfish Host Interface.
+
+### EFI Redfish Feature drivers
+Refine EFI Redfish Feature drivers, remove the dependencies of SMBIOS record type 42. EFI REST protocol instance and Redfish service information is passed to EFI Redfish feature drivers from EFI Redfish Config UEFI driver.
+
+### EFI REST JSON Structure DXE driver
+EFI REST JSON Structure DXE implementation (UEFI spec 2.8, section 29.7.3).
+
+### EFI Redfish REST JSON C Structure drivers
+EFI Redfish REST JSON to C Structure convertor implementations (UEFI spec 2.8, section 31.2).
+
+# Timeline
+| Time | Event | Related Modules |
+|:----:|:-----:|:--------------:|
+| 2019.01 | Initial open source release of UEFI Redfish feature. | Refer to "Related Modules" |
+| 2019.08 | UEFI Redfish feature re-architecture proposal in Tianocore design meeting | |
+| 2019.10 | Final solution of UEFI Redfish feature| Refer to above figure| |
+| 2020.01 (planed)| Contribute UEFI Redfish re-architecture code to edk2-staging| |
